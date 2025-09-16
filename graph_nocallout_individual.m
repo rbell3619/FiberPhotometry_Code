@@ -40,18 +40,18 @@ end
     
     ts1 = Epoc_Range(1) + (1:minLength1) / GRAB_fs*N;%GRAB time bector for plotting 
     ts2 = Epoc_Range(1) + (1:minLength2) / ISO_fs*N;%ISO time vector for plotting 
-    % meanGRAB_NoDC=meanGRAB-dcGRAB;%removing DC offset so they plot on top of one another
-    % meanISO_NoDC=meanISO-dcISO;
-    % nexttile
-    % plot(ts1, meanGRAB_NoDC, 'color',[0.4660, 0.6740, 0.1880], 'LineWidth', 3); 
-    % hold on;
-    % plot(ts2, meanISO_NoDC, 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3);
-    % axis tight
-    % legend('GRAB','ISO','FontSize',10,'Location','southeast')
-    % xlabel('Time, s','FontSize',10)
-    % ylabel('mV', 'FontSize', 10)
-    % title("Average Tone Response"+loc+type,'FontSize',15)
-    % hold off
+    meanGRAB_NoDC=meanGRAB-dcGRAB;%removing DC offset so they plot on top of one another
+    meanISO_NoDC=meanISO-dcISO;
+    nexttile
+    plot(ts1, meanGRAB_NoDC, 'color',[0.4660, 0.6740, 0.1880], 'LineWidth', 3); 
+    hold on;
+    plot(ts2, meanISO_NoDC, 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3);
+    axis tight
+    legend('GRAB','ISO','FontSize',10,'Location','southeast')
+    xlabel('Time, s','FontSize',10)
+    ylabel('mV', 'FontSize', 10)
+    title("Average Tone Response"+loc+type,'FontSize',15)
+    hold off
 
 zall = zeros(size(GRAB_avg)); 
 for i = 1:size(GRAB_avg,1)
@@ -61,24 +61,32 @@ for i = 1:size(GRAB_avg,1)
     zall(i,:)=(GRAB_avg(i,:) - zb)/zsd; % Z score per bin
 end
 zerror = std(zall)/sqrt(size(zall,1));
-   
-    % nexttile
-    % imagesc(ts2, 1, zall);
-    % colormap('jet'); 
-    % c1 = colorbar;
-    % clim([-5 5]);
-    % title('z-score heatmap','FontSize',15)
-    % ylabel('Trials', 'FontSize', 10);
-    % 
-    % 
-    % 
+ if height(zall)==1
+    Master_Matrix=zall;
+else
+Master_Matrix=mean(zall);
+end
+min_val=min(abs(ts2));
+zero_idx=abs(ts2)==min_val;
+zero_val=Master_Matrix(zero_idx);
+Master_Matrix=Master_Matrix-zero_val;  
+    nexttile
+    imagesc(ts2, 1, zall);
+    colormap('jet'); 
+    c1 = colorbar;
+    clim([-5 5]);
+    title('z-score heatmap','FontSize',15)
+    ylabel('Trials', 'FontSize', 10);
+
+
+
     XX = [ts2, fliplr(ts2)];
-    YY = [mean(zall)-zerror, fliplr(mean(zall)+zerror)];
+    YY = [Master_Matrix-zerror, fliplr(Master_Matrix+zerror)];
     nexttile
 
-    plot(ts2, mean(zall), 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3); hold on;
+    plot(ts2, Master_Matrix, 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3); hold on;
     line([0 0], [-20 ,20], 'Color', [.7 .7 .7], 'LineWidth', 2)
-    line([mean(RT_Hits) mean(RT_Hits)],[-2.5 ,1.5], 'Color', 'b', 'LineWidth', 2)
+    line([mean(RT_Hits)+.5 mean(RT_Hits)+.5],[-20 ,20], 'Color', 'b', 'LineWidth', 2)
     
     
     h = fill(XX, YY, 'r');
@@ -87,6 +95,7 @@ zerror = std(zall)/sqrt(size(zall,1));
     % Finish up the plot
     axis tight
     ylim([-2.5 1.5])
+    xlim([-12,12])
     xlabel('Time, s','FontSize',10)
     ylabel('Z-score', 'FontSize', 10)
     title("Normalized Response Around Tone Onset"+loc+type+Conditon,Animal_ID+Probe_depth,'FontSize',15)

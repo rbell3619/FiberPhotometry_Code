@@ -8,6 +8,12 @@ data.streams.(ISO).data = data.streams.(ISO).data(ind:end);
 data.epocs.PC1_.onset= data.epocs.PC1_.onset -t;
 data.epocs.PC1_.offset= data.epocs.PC1_.offset -t;
 
+% figure
+% hold on
+% plot(time,data.streams.(GRAB).data)
+% %plot(time,ISO_fit)
+% title('Raw GRAB signal')
+% legend('GRAB','FontSize',15)
 
 
 baseline=polyfit(data.streams.(ISO).data,data.streams.(GRAB).data,1);
@@ -18,11 +24,11 @@ data.streams.(GRAB).data=data.streams.(GRAB).data-ISO_fit;
 % figure
 % hold on
 % plot(time,data.streams.(GRAB).data)
-% plot(time,ISO_fit)
-% title('Raw GRAB signal with fitted ISO')
-% legend('GRAB','ISO','FontSize',15)
-% 
-% 
+% %plot(time,ISO_fit)
+% title('detrend GRAB signal')
+% legend('GRAB','FontSize',15)
+
+
 % figure
 % hold on
 % plot(time,data.streams.(GRAB).data)

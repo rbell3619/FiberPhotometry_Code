@@ -76,8 +76,8 @@ zerror = std(zall)/sqrt(size(zall,1));
     YY = [mean(zall)-zerror, fliplr(mean(zall)+zerror)];
     nexttile
     plot(ts2, mean(zall), 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3); hold on;
-    line([0 0], [-2.5 ,1.5], 'Color', [.7 .7 .7], 'LineWidth', 2)
-    line([mean(RT_Hits) mean(RT_Hits)],[-2.5 ,1.5], 'Color', 'b', 'LineWidth', 2)
+    line([0 0], [-20 ,20], 'Color', [.7 .7 .7], 'LineWidth', 2)
+    line([mean(RT_Hits)+.5 mean(RT_Hits)+.5],[-2.5 ,1.5], 'Color', 'b', 'LineWidth', 2)
     
     
     h = fill(XX, YY, 'r');
@@ -86,14 +86,10 @@ zerror = std(zall)/sqrt(size(zall,1));
     % Finish up the plot
     axis tight
     ylim([-2.5 1.5])
+    xlim([-12,12])
     xlabel('Time, s','FontSize',10)
     ylabel('Z-score', 'FontSize', 10)
     title("Normalized Response Around Tone Onset"+loc+type+Condition,Animal_ID,'FontSize',15)
 
-    filepath="Y:\Rachael Bell\FP.ACh\AUC Output sheets";
-
-AUC=[]; % cue, shock
-AUC(1,1)=trapz(mean(zall(:,ts2(1,:) < mean(RT_Hits)  & ts2(1,:) > 0))); %From cue onset to recation time
-AUC(1,2)=trapz(mean(zall(:,ts2(1,:) > mean(RT_Hits) & ts2(1,:) < 8)));%From reaction to 8 second after cue onset(no tone could be played during that time)
 
 end

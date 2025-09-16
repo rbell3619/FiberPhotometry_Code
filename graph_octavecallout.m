@@ -69,9 +69,18 @@ for i = 1:size(GRAB_avg,1)
     zall(i,:)=(GRAB_avg(i,:) - zb)/zsd; % Z score per bin
 end
 zerror = std(zall)/sqrt(size(zall,1));
-   
+if height(zall)==1
+    Master_Matrix=zall;
+else
+Master_Matrix=mean(zall);
+end
+min_val=min(abs(ts2));
+zero_idx=abs(ts2)==min_val;
+zero_val=Master_Matrix(zero_idx);
+Master_Matrix=Master_Matrix-zero_val;
+
     nexttile
-    imagesc(ts2, 1, zall);
+    imagesc(ts2, 1, Master_Matrix);
     colormap('jet'); 
     %c1 = colorbar;
     caxis([-5 5]);
@@ -81,12 +90,12 @@ zerror = std(zall)/sqrt(size(zall,1));
    
  
     XX = [ts2, fliplr(ts2)];
-    YY = [mean(zall)-zerror, fliplr(mean(zall)+zerror)];
+    YY = [Master_Matrix-zerror, fliplr(Master_Matrix+zerror)];
     nexttile
-    plot(ts2, mean(zall), 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3); 
+    plot(ts2, Master_Matrix, 'color',[0.8500, 0.3250, 0.0980], 'LineWidth', 3); 
     hold on;
     line([0 0], [-2.5 ,1.5], 'Color', [.7 .7 .7], 'LineWidth', 2)
-    line([mean(ToneHitRT{a}) mean(ToneHitRT{a})],[-2.5 ,1.5], 'Color', 'b', 'LineWidth', 2)
+    line([mean(ToneHitRT{a}+.5) mean(ToneHitRT{a}+.5)],[-2.5 ,1.5], 'Color', 'b', 'LineWidth', 2)
    
     
     h = fill(XX, YY, 'r');
